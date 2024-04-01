@@ -5,6 +5,7 @@ import Fox from "../models/Fox";
 import Loader from "../components/Loader";
 import useAlert from "../hooks/useAlert";
 import Alert from "../components/Alert";
+import { socialLinks } from "../constants";
 
 const Contact = () => {
     const [form, setForm] = useState({ name: "", email: "", mesasge: "" });
@@ -147,6 +148,23 @@ const Contact = () => {
                         />
                     </Suspense>
                 </Canvas>
+            </div>
+            {/* Social Links */}
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex justify-center items-center gap-4">
+                {socialLinks.map((link, index) => (
+                    <a
+                        key={index}
+                        href={link.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        <img
+                            src={link.iconUrl}
+                            alt={link.name}
+                            className="h-8 w-8"
+                        />
+                    </a>
+                ))}
             </div>
         </section>
     );
