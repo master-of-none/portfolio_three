@@ -5,7 +5,7 @@ const CTA = () => {
     return (
         <section className="cta">
             <p className="cta-text">
-                Neet to contact Me? <br className="sm:block hidden" />
+                Need to contact Me? <br className="sm:block hidden" />
                 Let's have a chat!
             </p>
             <Link to="/contact" className="btn">
