@@ -125,7 +125,7 @@ export default function Home() {
         </div>
       </Section>
 
-      <footer className="border-t border-rule px-5 py-8 sm:px-8">
+      <footer className="border-t border-rule px-5 pb-16 pt-8 sm:px-8">
         <div className="mx-auto flex max-w-5xl flex-col items-start justify-between gap-2 text-xs text-faint sm:flex-row sm:items-center">
           <span>
             <span className="text-accent">$</span> built from scratch · next.js · no templates

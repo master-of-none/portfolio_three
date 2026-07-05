@@ -6,6 +6,8 @@ import "@fontsource/vt323/400.css";
 import "./globals.css";
 import { TopBar } from "@/components/TopBar";
 import { CommandPalette } from "@/components/CommandPalette";
+import { CrtBoot } from "@/components/CrtBoot";
+import { StatusBar } from "@/components/StatusBar";
 import { profile } from "@/content/profile";
 
 const url = "https://shrikrishna.dev";
@@ -40,7 +42,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0b0c0e",
+  themeColor: "#0e0b08",
   width: "device-width",
   initialScale: 1,
 };
@@ -55,11 +57,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body className="relative">
+        <div className="ember" aria-hidden />
         <div className="relative z-10">
           <TopBar />
           <CommandPalette />
           <main>{children}</main>
+          <StatusBar />
         </div>
+        <CrtBoot />
       </body>
     </html>
   );

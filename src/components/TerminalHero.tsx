@@ -4,6 +4,9 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { profile } from "@/content/profile";
 import { bootLines, runCommand, type Line, type Tone } from "@/lib/commands";
 import { applyPhosphor } from "./ThemeToggle";
+import { Decode } from "./Decode";
+
+const totalBootChars = bootLines.reduce((n, l) => n + Math.max(l.text.length, 1), 0);
 
 const toneClass: Record<Tone, string> = {
   fg: "text-fg",
@@ -16,14 +19,14 @@ const toneClass: Record<Tone, string> = {
 function OutLine({ line }: { line: Line }) {
   if (!line) return null;
   return (
-    <div className={`whitespace-pre-wrap break-words ${toneClass[line.tone ?? "fg"]}`}>
+    <div className={`whitespace-pre-wrap wrap-break-word ${toneClass[line.tone ?? "fg"]}`}>
       {line.text || " "}
     </div>
   );
 }
 
 export function TerminalHero() {
-  const [booted, setBooted] = useState<Line[]>([]);
+  const [typedChars, setTypedChars] = useState(0);
   const [history, setHistory] = useState<Line[]>([]);
   const [value, setValue] = useState("");
   const [recall, setRecall] = useState<string[]>([]);
@@ -31,19 +34,47 @@ export function TerminalHero() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // typed boot sequence (instant when reduced motion is on)
+  // boot sequence typed character-by-character (instant when reduced motion is on)
   useEffect(() => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduce) {
-      setBooted(bootLines);
+      setTypedChars(totalBootChars);
       return;
     }
-    setBooted([]);
-    const timers = bootLines.map((line, idx) =>
-      setTimeout(() => setBooted((prev) => [...prev, line]), 350 + idx * 420),
-    );
-    return () => timers.forEach(clearTimeout);
+    setTypedChars(0);
+    let interval: ReturnType<typeof setInterval> | undefined;
+    const start = setTimeout(() => {
+      interval = setInterval(() => {
+        setTypedChars((n) => {
+          if (n >= totalBootChars) {
+            clearInterval(interval);
+            return n;
+          }
+          return n + 1;
+        });
+      }, 14);
+    }, 400);
+    return () => {
+      clearTimeout(start);
+      if (interval) clearInterval(interval);
+    };
   }, []);
+
+  // derive visible boot lines from the character count
+  const booted: Line[] = [];
+  let remaining = typedChars;
+  for (const line of bootLines) {
+    if (remaining <= 0) break;
+    const len = Math.max(line.text.length, 1);
+    if (remaining >= len) {
+      booted.push(line);
+      remaining -= len;
+    } else {
+      booted.push({ ...line, text: line.text.slice(0, remaining) });
+      remaining = 0;
+    }
+  }
+  const bootDone = typedChars >= totalBootChars;
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
@@ -103,7 +134,7 @@ export function TerminalHero() {
         {/* identity block */}
         <p className="prompt text-sm text-dim">whoami</p>
         <h1 className="mt-3 font-display text-5xl leading-[0.95] text-fg glow sm:text-7xl md:text-8xl">
-          {profile.name}
+          <Decode text={profile.name} delay={1150} />
         </h1>
         <p className="mt-4 max-w-2xl text-base text-fg sm:text-lg">
           <span className="text-accent">{profile.role}</span>
@@ -125,12 +156,12 @@ export function TerminalHero() {
           <div
             ref={scrollRef}
             onClick={() => inputRef.current?.focus()}
-            className="max-h-64 min-h-[8.5rem] overflow-y-auto px-3 py-2.5 text-[13px] leading-relaxed sm:text-sm"
+            className="max-h-64 min-h-34 overflow-y-auto px-3 py-2.5 text-[13px] leading-relaxed sm:text-sm"
           >
             {booted.map((line, i) => (
               <OutLine key={`b${i}`} line={line} />
             ))}
-            {booted.length >= bootLines.length && (
+            {bootDone && (
               <div className="text-dim">
                 type <span className="text-accent">help</span> to explore, or{" "}
                 <span className="text-accent">ls</span> to look around.

@@ -10,7 +10,7 @@ const statusMeta: Record<Project["status"], { label: string; cls: string }> = {
 export function ProjectCard({ project }: { project: Project }) {
   const s = statusMeta[project.status];
   return (
-    <article className="panel group flex h-full flex-col p-5 transition-colors hover:border-rule-bright">
+    <article className="panel glow-hover group flex h-full flex-col p-5">
       <div className="flex items-start justify-between gap-3">
         <div>
           <h3 className="font-display text-2xl leading-none text-fg">{project.name}</h3>

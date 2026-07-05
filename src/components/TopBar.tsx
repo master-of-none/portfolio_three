@@ -27,7 +27,7 @@ export function TopBar() {
             <a
               key={item}
               href={`#${item}`}
-              className="transition-colors hover:text-accent"
+              className="transition-colors before:mr-1 before:text-accent before:opacity-0 before:transition-opacity before:content-['>'] hover:text-accent hover:before:opacity-100"
             >
               {item}
             </a>

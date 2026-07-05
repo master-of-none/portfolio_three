@@ -6,14 +6,14 @@
  * ------------------------------------------------------------------ */
 
 @theme {
-  --color-bg: #0b0c0e;
-  --color-raised: #131518;
-  --color-sunk: #08090a;
+  --color-bg: #0e0b08;
+  --color-raised: #17130e;
+  --color-sunk: #0a0806;
   --color-fg: #e7e3d8;
-  --color-dim: #8a8578;
-  --color-faint: #55534b;
-  --color-rule: #26282c;
-  --color-rule-bright: #3a3d42;
+  --color-dim: #94897a;
+  --color-faint: #5c5344;
+  --color-rule: #2b2519;
+  --color-rule-bright: #43392a;
 
   /* accent is a runtime var so the `theme` command can swap phosphor color */
   --color-accent: var(--accent);
@@ -83,6 +83,49 @@ body::before {
   -webkit-mask-image: radial-gradient(ellipse 100% 70% at 50% 0%, #000 35%, transparent 78%);
 }
 
+/* ember glow — a warm light breathing at the top of the room */
+.ember {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 85% 60% at 50% -12%,
+    color-mix(in srgb, var(--color-accent) 10%, transparent),
+    transparent 70%
+  );
+  animation: ember-breathe 9s ease-in-out infinite;
+}
+
+@keyframes ember-breathe {
+  0%,
+  100% {
+    opacity: 0.65;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* CRT texture: scanlines + film grain, one full-screen pass over everything */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.55) 0px,
+      rgba(0, 0, 0, 0.55) 1px,
+      transparent 1px,
+      transparent 3px
+    ),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.05;
+}
+
 /* terminal-style text selection: invert to accent */
 ::selection {
   background: var(--color-accent);
@@ -149,6 +192,19 @@ a {
   background: color-mix(in srgb, var(--color-raised) 60%, transparent);
 }
 
+/* warm lift for cards */
+.glow-hover {
+  transition:
+    box-shadow 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+.glow-hover:hover {
+  border-color: color-mix(in srgb, var(--color-accent) 45%, var(--color-rule));
+  box-shadow: 0 0 30px -8px color-mix(in srgb, var(--color-accent) 32%, transparent);
+  transform: translateY(-2px);
+}
+
 /* prompt label */
 .prompt::before {
   content: "$ ";
@@ -158,6 +214,223 @@ a {
 /* section index tick */
 .tick {
   color: var(--color-accent);
+}
+
+/* ---- TV-whack boot ---- */
+.crt-line {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  margin-top: -1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--color-accent) 12%,
+    #fff8e7 50%,
+    var(--color-accent) 88%,
+    transparent
+  );
+  box-shadow:
+    0 0 18px 3px color-mix(in srgb, var(--color-accent) 70%, transparent),
+    0 0 60px 10px color-mix(in srgb, var(--color-accent) 30%, transparent);
+  transform: scaleX(0);
+  animation:
+    crt-line-in 0.34s ease-out forwards,
+    crt-line-out 0.4s 0.5s ease-in forwards;
+}
+@keyframes crt-line-in {
+  to {
+    transform: scaleX(1);
+  }
+}
+@keyframes crt-line-out {
+  to {
+    opacity: 0;
+  }
+}
+
+/* TV snow — the grain tile jumping in hard steps reads as static */
+.tv-noise {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+  filter: grayscale(1) contrast(1.5) brightness(1.15);
+  opacity: 0.85;
+  animation: tv-noise 0.5s steps(8) infinite;
+}
+@keyframes tv-noise {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 180px 180px;
+  }
+}
+.tv-noise.tv-clearing {
+  animation:
+    tv-noise 0.5s steps(8) infinite,
+    tv-clearout 0.45s steps(3) forwards;
+}
+@keyframes tv-clearout {
+  to {
+    opacity: 0;
+  }
+}
+
+/* horizontal tearing bands */
+.tv-tear {
+  position: absolute;
+  left: -10%;
+  right: -10%;
+  height: 14px;
+  background: linear-gradient(180deg, transparent, rgba(255, 248, 231, 0.55), transparent);
+  mix-blend-mode: screen;
+  animation: tv-tear 1.1s ease-in-out infinite;
+}
+@keyframes tv-tear {
+  0% {
+    transform: translateY(0) skewX(-8deg);
+  }
+  50% {
+    transform: translateY(35vh) skewX(6deg);
+  }
+  100% {
+    transform: translateY(70vh) skewX(-8deg);
+  }
+}
+
+/* vertical-hold roll band */
+.tv-roll {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 24vh;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    rgba(0, 0, 0, 0.5) 40%,
+    rgba(0, 0, 0, 0.7) 60%,
+    transparent
+  );
+  animation: tv-roll 1.3s linear infinite;
+}
+@keyframes tv-roll {
+  from {
+    top: -26vh;
+  }
+  to {
+    top: 110vh;
+  }
+}
+
+/* impact */
+.tv-shake {
+  animation: tv-shake 0.28s linear;
+}
+@keyframes tv-shake {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0);
+  }
+  15% {
+    transform: translate(-8px, 5px) rotate(-0.6deg);
+  }
+  30% {
+    transform: translate(7px, -6px) rotate(0.7deg);
+  }
+  45% {
+    transform: translate(-6px, 4px) rotate(-0.5deg);
+  }
+  60% {
+    transform: translate(5px, -3px) rotate(0.3deg);
+  }
+  80% {
+    transform: translate(-3px, 2px) rotate(-0.2deg);
+  }
+}
+.tv-flash {
+  position: absolute;
+  inset: 0;
+  background: #fff8e7;
+  opacity: 0;
+  animation: tv-flash 0.32s ease-out forwards;
+}
+@keyframes tv-flash {
+  0% {
+    opacity: 0;
+  }
+  18% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* the repair person — fades in and walks slowly to center screen */
+.tv-person {
+  position: absolute;
+  bottom: 12vh;
+  left: 50%;
+  width: 84px;
+  margin-left: -42px;
+  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--color-accent) 50%, transparent));
+  animation:
+    tv-walk-in 1.3s cubic-bezier(0.25, 0.6, 0.35, 1) 0.35s both,
+    tv-bob 0.22s steps(2) 0.35s 6;
+}
+@keyframes tv-walk-in {
+  0% {
+    transform: translateX(46vw);
+    opacity: 0;
+  }
+  35% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+@keyframes tv-bob {
+  0%,
+  100% {
+    margin-bottom: 0;
+  }
+  50% {
+    margin-bottom: 5px;
+  }
+}
+.tv-arm {
+  transform-box: fill-box;
+  transform-origin: 85% 20%;
+}
+.tv-person.tv-whacking .tv-arm {
+  animation: tv-arm-whack 0.26s cubic-bezier(0.55, -0.35, 0.25, 1.3) forwards;
+}
+@keyframes tv-arm-whack {
+  0% {
+    transform: rotate(0deg);
+  }
+  42% {
+    transform: rotate(118deg);
+  }
+  100% {
+    transform: rotate(-18deg);
+  }
+}
+
+/* end-of-boot fade */
+.tv-fadeout {
+  animation: tv-fade 0.2s ease 0.4s forwards;
+}
+@keyframes tv-fade {
+  to {
+    opacity: 0;
+  }
 }
 
 @keyframes fadeUp {
