@@ -1,35 +1,28 @@
 {
-  "name": "portfolio_three",
+  "name": "shrikrishna-portfolio",
+  "version": "1.0.0",
   "private": true,
-  "version": "0.0.0",
-  "type": "module",
+  "description": "Personal portfolio of Shrikrishna P. Bhat — terminal / dev-brutalist, built with Next.js.",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
   },
   "dependencies": {
-    "@emailjs/browser": "^4.3.3",
-    "@react-spring/three": "^9.7.3",
-    "@react-three/drei": "^9.103.0",
-    "@react-three/fiber": "^8.16.1",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.22.3",
-    "react-vertical-timeline-component": "^3.6.0"
+    "@fontsource/ibm-plex-mono": "^5.1.1",
+    "@fontsource/vt323": "^5.1.1",
+    "framer-motion": "^11.11.17",
+    "next": "^15.5.4",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "@types/react": "^18.2.66",
-    "@types/react-dom": "^18.2.22",
-    "@vitejs/plugin-react": "^4.2.1",
-    "autoprefixer": "^10.4.19",
-    "eslint": "^8.57.0",
-    "eslint-plugin-react": "^7.34.1",
-    "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-react-refresh": "^0.4.6",
-    "postcss": "^8.4.38",
-    "tailwindcss": "^3.4.3",
-    "vite": "^5.2.0"
+    "@tailwindcss/postcss": "^4.0.0",
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.7.2"
   }
 }
